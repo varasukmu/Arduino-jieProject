@@ -1,9 +1,8 @@
 const int BTN = 2;
 const int LED = 3;
 
-// Variables to manage the toggle state and button press detection
-int ledState = LOW;        // current state of the LED (LOW means off)
-int lastButtonState = LOW; // the previous reading from the input pin
+int ledState = LOW;        
+int lastButtonState = LOW; 
 
 void setup()
 {
