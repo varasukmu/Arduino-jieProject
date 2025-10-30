@@ -14,10 +14,15 @@ const char MQTT_PASSWORD[] = "";              // CHANGE IT IF REQUIRED, empty if
 // The MQTT topics that Arduino should publish/subscribe
 const char PUBLISH_TOPIC_A[] = "67070159/temp";       // CHANGE IT AS YOU DESIRE
 const char PUBLISH_TOPIC_B[] = "67070159/light";       // CHANGE IT AS YOU DESIRE
-const char PUBLISH_TOPIC_C[] = "67070159/temp";       // CHANGE IT AS YOU DESIRE
-const char SUBSCRIBE_TOPIC[] = "67070159/temp";  // CHANGE IT AS YOU DESIRE
+const char SUBSCRIBE_TOPIC[] = "67070159/venus";  // CHANGE IT AS YOU DESIRE
 
 const int PUBLISH_INTERVAL = 5000;  // 5 seconds
+
+
+const int red = 7;
+const int green = 8;
+const int blue = 9;
+
 
 WiFiClient network;
 MQTTClient mqtt = MQTTClient(256);
@@ -42,6 +47,12 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   connectToMQTT();
+
+
+  pinMode(red, OUTPUT);
+  pinMode(green, OUTPUT);
+  pinMode(blue, OUTPUT);
+
 }
 
 void loop() {
@@ -105,15 +116,29 @@ void sendToMQTT() {
 
 
   }
-
 void messageReceived(String &topic, String &payload) {
   Serial.println("Arduino UNO R4 - received from MQTT:");
   Serial.println("- topic: " + topic);
   Serial.println("- payload:");
   Serial.println(payload);
 
-  // You can process the incoming data , then control something
-  /*
-  process something
-  */
+  // 1. แปลงค่า payload (String) ให้เป็นตัวเลขจำนวนเต็ม (int)
+  int controlValue = payload.toInt(); 
+  
+  // 2. ใช้ค่าตัวเลขที่แปลงแล้วในการเปรียบเทียบ
+  if (36 <= controlValue && controlValue <= 50)
+    setLight( 0, 1, 1); // แดง
+  else if (26 <= controlValue && controlValue <= 35)
+    setLight( 1, 0, 1); // เขียว
+  else if (10 <= controlValue && controlValue <= 25)
+    setLight( 1, 1, 0); // น้ำเงิน
+  else
+    setLight( 1, 1, 1);
+}
+
+void setLight(int r, int g, int b) {
+   digitalWrite(red, r);
+   digitalWrite(green, g);
+   digitalWrite(blue, b);
+   delay(1000);
 }
